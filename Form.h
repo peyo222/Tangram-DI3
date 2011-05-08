@@ -13,7 +13,8 @@ struct Tangram {
     short base;
     short x; // coordonnées du point supérieur gauche
     short y; // du carré de base
-    Uint8 r, g, b, a;
+    Uint8 r, g, b, a; //couleur des pièces
+    Uint8 fr, fg, fb, fa; //couleur de la pièce selectionnée
 };
 
 #endif

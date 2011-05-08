@@ -8,6 +8,7 @@ int main ( int argc, char** argv ) {
     SDL_Surface *screen = NULL;
     SDL_Event event;
     int done = 0;
+    int dragDrop = 0;
     struct Tangram tangram;
     struct Form * focus = NULL;
 
@@ -17,7 +18,7 @@ int main ( int argc, char** argv ) {
         printf( "Impossible d'initialiser SDL: %s\n", SDL_GetError() );
         return -1;
     }
-    screen = SDL_SetVideoMode(840, 480, 16, SDL_SWSURFACE|SDL_DOUBLEBUF); // Creation d'une nouvelle fenêtre
+    screen = SDL_SetVideoMode(840, 480, 16, SDL_HWSURFACE|SDL_DOUBLEBUF); // Creation d'une nouvelle fenêtre
     if ( !screen ) {
         printf("Impossible d'initialiser la fenêtre: %s\n", SDL_GetError());
         return -1;
@@ -25,7 +26,6 @@ int main ( int argc, char** argv ) {
     SDL_WM_SetCaption("Tangram", NULL); // Nom de la fenêtre
     if (Init(screen, &tangram) == -1) // Initialisation des formes et des dessins
         return -1;
-
 
     /*Programme principal*/
     while (!done) { // Boucle principale
@@ -43,11 +43,20 @@ int main ( int argc, char** argv ) {
                     if (event.button.button == SDL_BUTTON_RIGHT);
                     if (event.button.button == SDL_BUTTON_MIDDLE);
                     if (event.button.button == SDL_BUTTON_LEFT) {
-                        focus = Selection(&tangram,event.button.x,event.button.y);
-                        if(focus!=NULL) puts("OK"); else puts("KO");
-                        if (focus != NULL) {
-                            polygonRGBA(screen, focus->x, focus->y, focus->type, 125, 75, 0, 255);
+                        if (dragDrop == 0) {
+                            focus = Selection(&tangram,event.button.x,event.button.y);
+                            Refresh(screen,&tangram,focus);
+                            if (focus != NULL)
+                                dragDrop = 1;
                         }
+                        else
+                            dragDrop = 0;
+                    }
+                }
+                case SDL_MOUSEMOTION: {
+                    if (dragDrop == 1) {
+                        DragDrop(screen, &tangram, focus, event.motion.x, event.motion.y);
+                        Refresh(screen, &tangram, focus);
                     }
                 }
             }

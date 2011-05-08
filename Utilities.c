@@ -15,6 +15,10 @@ int Init(SDL_Surface *screen,struct Tangram *tangram) {
     tangram->g = 255;
     tangram->b = 255;
     tangram->a = 255;
+    tangram->fr = 102;
+    tangram->fg = 255;
+    tangram->fb = 153;
+    tangram->fa = 255;
     tangram->x = 50;
     tangram->y = 50;
 
@@ -101,10 +105,38 @@ int Init(SDL_Surface *screen,struct Tangram *tangram) {
     return 0;
 }
 
+void Refresh(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus) {
+    SDL_FillRect(screen, NULL, 0);
+
+    filledPolygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    filledPolygonRGBA(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    filledPolygonRGBA(screen, tangram->mTri.x, tangram->mTri.y, tangram->mTri.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    filledPolygonRGBA(screen, tangram->sTri1.x, tangram->sTri1.y, tangram->sTri1.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    filledPolygonRGBA(screen, tangram->sTri2.x, tangram->sTri2.y, tangram->sTri2.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    filledPolygonRGBA(screen, tangram->square.x, tangram->square.y, tangram->square.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    filledPolygonRGBA(screen, tangram->trapeze.x, tangram->trapeze.y, tangram->trapeze.type, tangram->r, tangram->g, tangram->b, tangram->a);
+
+    polygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, 0, 0, 0, 255);
+    polygonRGBA(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, 0, 0, 0, 255);
+    polygonRGBA(screen, tangram->mTri.x, tangram->mTri.y, tangram->mTri.type, 0, 0, 0, 255);
+    polygonRGBA(screen, tangram->sTri1.x, tangram->sTri1.y, tangram->sTri1.type, 0, 0, 0, 255);
+    polygonRGBA(screen, tangram->sTri2.x, tangram->sTri2.y, tangram->sTri2.type, 0, 0, 0, 255);
+    polygonRGBA(screen, tangram->square.x, tangram->square.y, tangram->square.type, 0, 0, 0, 255);
+    polygonRGBA(screen, tangram->trapeze.x, tangram->trapeze.y, tangram->trapeze.type, 0, 0, 0, 255);
+
+    if(focus != NULL) {
+        filledPolygonRGBA(screen, focus->x, focus->y, focus->type, tangram->fr, tangram->fg, tangram->fb, tangram->fa);
+        polygonRGBA(screen, focus->x, focus->y, focus->type, 0, 0, 0, 255);
+    }
+
+    SDL_Flip(screen);
+}
+
 struct Form* Selection(struct Tangram *tangram, short x, short y) {
     short vector1[2];
     short vector2[2];
     int i, j, tmp, res;
+
     for (i=0;i<7;i++) {
         res = 0;
         for (j=0;j<tangram->forms[i]->type;j++) {
@@ -118,15 +150,34 @@ struct Form* Selection(struct Tangram *tangram, short x, short y) {
             }
             vector2[0] = x - tangram->forms[i]->x[j];
             vector2[1] = y - tangram->forms[i]->y[j];
-            tmp = vector1[0]*vector2[0]+vector1[1]*vector2[1];
+            /*tmp = vector1[0]*vector2[0]+vector1[1]*vector2[1];*/
+            tmp = vector2[0]*vector1[1]-vector1[0]*vector2[1];
             if (tmp > 0)
                 res++;
             else if (tmp < 0)
                 res--;
         }
-        printf("i = %d res = %d  x = %d y = %d\n",i ,res, x, y);
+        /*printf("i = %d res = %d  x = %d y = %d\n",i ,res, x, y);*/
         if (res == (tangram->forms[i]->type)*(-1) || res == tangram->forms[i]->type)
             return tangram->forms[i];
     }
     return NULL;
+}
+
+void DragDrop(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus, short x, short y) {
+    int g[2]; //Point de gravité
+    int v[2]; //Vecteur de translation
+    int i;
+    if(focus->type == 3) {
+        g[0] = (focus->x[0]+focus->x[1]+focus->x[2])/3;
+        g[1] = (focus->y[0]+focus->y[1]+focus->y[2])/3;
+        v[0] = x - g[0];
+        v[1] = y - g[1];
+        for(i=0;i<3;i++) {
+            //printf("x = %d y = %d", focus->x[i], focus->y[i]);
+            focus->x[i] = focus->x[i]+v[0];
+            focus->y[i] = focus->y[i]+v[1];
+            //printf("x' = %d y' = %d", focus->x[i], focus->y[i]);
+        }
+    }
 }
