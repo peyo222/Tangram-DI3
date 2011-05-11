@@ -178,7 +178,6 @@ struct Form* Selection(struct Tangram *tangram, short x, short y)
     return NULL;
 }
 
-<<<<<<< HEAD
 void DragDrop(struct Form *focus, short x, short y) {
     int g[2]; //Point de gravité
     int v[2]; //Vecteur de translation
@@ -197,25 +196,6 @@ void DragDrop(struct Form *focus, short x, short y) {
         //printf("x = %d y = %d", focus->x[i], focus->y[i]);
         focus->x[i] = focus->x[i]+v[0];
         focus->y[i] = focus->y[i]+v[1];
-=======
-void DragDrop(struct Form *focus, short x, short y)
-{
-    int g[2]; //Point de gravité
-    int v[2]; //Vecteur de translation
-    int i;
-    if(focus->type == 3)
-    {
-        g[0] = (focus->x[0]+focus->x[1]+focus->x[2])/3;
-        g[1] = (focus->y[0]+focus->y[1]+focus->y[2])/3;
-        v[0] = x - g[0];
-        v[1] = y - g[1];
-        for(i=0; i<3; i++)
-        {
-            //printf("x = %d y = %d", focus->x[i], focus->y[i]);
-            focus->x[i] = focus->x[i]+v[0];
-            focus->y[i] = focus->y[i]+v[1];
->>>>>>> 5107132e396a494f6cababc9e9fc26debda09713
-            //printf("x' = %d y' = %d", focus->x[i], focus->y[i]);
     }
 }
 
@@ -233,8 +213,7 @@ void Invert(struct Form *focus) {
     }
 }
 
-void Rotation(struct Form *focus)
-{
+void Rotation(struct Form *focus) {
     int g[2]; //Point de gravité
     int i;
     float angle = 15; //Angle de Rotation
@@ -242,12 +221,10 @@ void Rotation(struct Form *focus)
 
     angle = ( M_PI * angle ) / 180;
 
-    if(focus->type == 3)
-    {
+    if(focus->type == 3) {
         g[0] = (focus->x[0]+focus->x[1]+focus->x[2])/3;
         g[1] = (focus->y[0]+focus->y[1]+focus->y[2])/3;
-        for(i=0; i<3; i++)
-        {
+        for(i=0; i<3; i++) {
             xi = focus->x[i];
             printf("x = %d y = %d \n", focus->x[i], focus->y[i]);
             focus->x[i] = roundf((cos(angle) * (xi - g[0])) - (sin(angle) *(focus->y[i]-g[1])) + g[0]);
@@ -255,12 +232,10 @@ void Rotation(struct Form *focus)
             printf("x' = %d y' = %d \n", focus->x[i], focus->y[i]);
         }
     }
-    else
-    {
+    else {
             g[0] = ((focus->x[0]+focus->x[1])/2 + (focus->x[2]+focus->x[3])/2)/2;
             g[1] = ((focus->y[0]+focus->y[1])/2 + (focus->y[2]+focus->y[3])/2)/2;
-        for(i=0; i<4; i++)
-        {
+        for(i=0; i<4; i++) {
             xi = focus->x[i];
             printf("x = %d y = %d \n", focus->x[i], focus->y[i]);
             focus->x[i] = roundf((cos(angle) * (xi - g[0])) - (sin(angle) *(focus->y[i]-g[1])) + g[0]);
