@@ -164,20 +164,38 @@ struct Form* Selection(struct Tangram *tangram, short x, short y) {
     return NULL;
 }
 
-void DragDrop(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus, short x, short y) {
+void DragDrop(struct Form *focus, short x, short y) {
     int g[2]; //Point de gravité
     int v[2]; //Vecteur de translation
     int i;
-    if(focus->type == 3) {
+    if (focus->type == 3) {
         g[0] = (focus->x[0]+focus->x[1]+focus->x[2])/3;
         g[1] = (focus->y[0]+focus->y[1]+focus->y[2])/3;
-        v[0] = x - g[0];
-        v[1] = y - g[1];
-        for(i=0;i<3;i++) {
-            //printf("x = %d y = %d", focus->x[i], focus->y[i]);
-            focus->x[i] = focus->x[i]+v[0];
-            focus->y[i] = focus->y[i]+v[1];
+    }
+    if (focus->type == 4) {
+        g[0] = focus->x[0]+(focus->x[2]-focus->x[0])/2;
+        g[1] = focus->y[0]+(focus->y[2]-focus->y[0])/2;
+    }
+    v[0] = x - g[0];
+    v[1] = y - g[1];
+    for(i=0;i<focus->type;i++) {
+        //printf("x = %d y = %d", focus->x[i], focus->y[i]);
+        focus->x[i] = focus->x[i]+v[0];
+        focus->y[i] = focus->y[i]+v[1];
             //printf("x' = %d y' = %d", focus->x[i], focus->y[i]);
-        }
+    }
+}
+
+void Invert(struct Form *focus) {
+    int tmp;
+    int g;
+    int i;
+    if (focus->type == 4)
+        g = focus->x[0]+(focus->x[2]-focus->x[0])/2;
+    else if (focus->type == 3)
+        g = (focus->x[0]+focus->x[1]+focus->x[2])/3;
+    for (i=0;i<focus->type;i++) {
+        tmp = focus->x[i] - g;
+        focus->x[i] = g-tmp;
     }
 }

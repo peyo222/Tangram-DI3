@@ -7,8 +7,12 @@
 int main ( int argc, char** argv ) {
     SDL_Surface *screen = NULL;
     SDL_Event event;
-    int done = 0;
-    int dragDrop = 0;
+    int done = 0;       // Fin de la boucle principale
+    int dragDrop = 0;   // Détection du drag&drop
+    int buttonUp = 0;   // On prend un buttonUp sur deux
+    int mouseMove = 0;  // On prends en compte que un déplacement de pixel sur deux
+    int doubleClick = 0;// Détection du double click
+    int mouse[2];       // Sauvegarde des coordonnées de la souris
     struct Tangram tangram;
     struct Form * focus = NULL;
 
@@ -29,7 +33,7 @@ int main ( int argc, char** argv ) {
 
     /*Programme principal*/
     while (!done) { // Boucle principale
-        while (SDL_PollEvent(&event)) {
+        while (SDL_WaitEvent(&event)) {
             switch (event.type) {
                 case SDL_QUIT: // Si la fenêtre est fermée
                     done = 1;
@@ -43,20 +47,47 @@ int main ( int argc, char** argv ) {
                     if (event.button.button == SDL_BUTTON_RIGHT);
                     if (event.button.button == SDL_BUTTON_MIDDLE);
                     if (event.button.button == SDL_BUTTON_LEFT) {
-                        if (dragDrop == 0) {
+                        if (!doubleClick) {
+                            if (!dragDrop) {
+                                focus = Selection(&tangram,event.button.x,event.button.y);
+                                Refresh(screen,&tangram,focus);
+                                if (focus != NULL)
+                                    dragDrop = 1;
+                            }
+                            doubleClick = 1;
+                            mouse[0] = event.motion.x;
+                            mouse[1] = event.motion.y;
+                        }
+                        else {
+                            if (mouse[0] == event.motion.x && mouse[1] == event.motion.y) {
+                                Invert(focus);
+                                Refresh(screen,&tangram,focus);
+                            }
                             focus = Selection(&tangram,event.button.x,event.button.y);
                             Refresh(screen,&tangram,focus);
                             if (focus != NULL)
                                 dragDrop = 1;
+                            doubleClick = 0;
                         }
-                        else
-                            dragDrop = 0;
+                    }
+                }
+                case SDL_MOUSEBUTTONUP: {
+                    if (!buttonUp)
+                        buttonUp = 1;
+                    else {
+                        buttonUp = 0;
+                        dragDrop = 0;
                     }
                 }
                 case SDL_MOUSEMOTION: {
                     if (dragDrop == 1) {
-                        DragDrop(screen, &tangram, focus, event.motion.x, event.motion.y);
-                        Refresh(screen, &tangram, focus);
+                        if (!mouseMove) {
+                            DragDrop(focus, event.motion.x, event.motion.y);
+                            Refresh(screen, &tangram, focus);
+                            mouseMove = 2;
+                        }
+                        else
+                            mouseMove--;
                     }
                 }
             }

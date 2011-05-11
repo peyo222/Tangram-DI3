@@ -9,6 +9,7 @@
 int Init(SDL_Surface *screen, struct Tangram *tangram);
 struct Form* Selection(struct Tangram *tangram, short x, short y);
 void Refresh(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus);
-void DragDrop(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus,  short x, short y);
+void DragDrop(struct Form *focus,  short x, short y);
+void Invert(struct Form *focus);
 
 #endif
