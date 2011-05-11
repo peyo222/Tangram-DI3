@@ -206,9 +206,7 @@ void Rotation(struct Form *focus)
     float angle = 15; //Angle de Rotation
     short xi;
 
-    printf("%f \n" , angle);
     angle = ( M_PI * angle ) / 180;
-    printf("%f \n" , angle);
 
     if(focus->type == 3)
     {
@@ -218,8 +216,8 @@ void Rotation(struct Form *focus)
         {
             xi = focus->x[i];
             printf("x = %d y = %d \n", focus->x[i], focus->y[i]);
-            focus->x[i] = (cos(angle) * (xi - g[0])) - (sin(angle) *(focus->y[i]-g[1])) + g[0];
-            focus->y[i] = (sin(angle) * (xi - g[0])) + (cos(angle) *(focus->y[i]-g[1])) + g[1];
+            focus->x[i] = roundf((cos(angle) * (xi - g[0])) - (sin(angle) *(focus->y[i]-g[1])) + g[0]);
+            focus->y[i] = roundf((sin(angle) * (xi - g[0])) + (cos(angle) *(focus->y[i]-g[1])) + g[1]);
             printf("x' = %d y' = %d \n", focus->x[i], focus->y[i]);
         }
     }
@@ -227,13 +225,12 @@ void Rotation(struct Form *focus)
     {
             g[0] = ((focus->x[0]+focus->x[1])/2 + (focus->x[2]+focus->x[3])/2)/2;
             g[1] = ((focus->y[0]+focus->y[1])/2 + (focus->y[2]+focus->y[3])/2)/2;
-
         for(i=0; i<4; i++)
         {
             xi = focus->x[i];
             printf("x = %d y = %d \n", focus->x[i], focus->y[i]);
-            focus->x[i] = (cos(angle) * (xi - g[0])) - (sin(angle) *(focus->y[i]-g[1])) + g[0];
-            focus->y[i] = (sin(angle) * (xi - g[0])) + (cos(angle) *(focus->y[i]-g[1])) + g[1];
+            focus->x[i] = roundf((cos(angle) * (xi - g[0])) - (sin(angle) *(focus->y[i]-g[1])) + g[0]);
+            focus->y[i] = roundf((sin(angle) * (xi - g[0])) + (cos(angle) *(focus->y[i]-g[1])) + g[1]);
             printf("x' = %d y' = %d \n", focus->x[i], focus->y[i]);
         }
     }
