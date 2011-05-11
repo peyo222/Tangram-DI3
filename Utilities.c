@@ -1,6 +1,7 @@
 #include "Utilities.h"
 
-int Init(SDL_Surface *screen,struct Tangram *tangram) {
+int Init(SDL_Surface *screen,struct Tangram *tangram)
+{
     /* Initialisation du tangram */
     tangram->hTri1.type = 3;
     tangram->hTri2.type = 3;
@@ -9,7 +10,13 @@ int Init(SDL_Surface *screen,struct Tangram *tangram) {
     tangram->sTri2.type = 3;
     tangram->square.type = 4;
     tangram->trapeze.type = 4;
-    tangram->forms[0] = &(tangram->hTri1); tangram->forms[1] = &(tangram->hTri2); tangram->forms[2] = &(tangram->mTri); tangram->forms[3] = &(tangram->sTri1); tangram->forms[4] = &(tangram->sTri2); tangram->forms[5] = &(tangram->square); tangram->forms[6] = &(tangram->trapeze);
+    tangram->forms[0] = &(tangram->hTri1);
+    tangram->forms[1] = &(tangram->hTri2);
+    tangram->forms[2] = &(tangram->mTri);
+    tangram->forms[3] = &(tangram->sTri1);
+    tangram->forms[4] = &(tangram->sTri2);
+    tangram->forms[5] = &(tangram->square);
+    tangram->forms[6] = &(tangram->trapeze);
     tangram->base = 300;
     tangram->r = 255;
     tangram->g = 255;
@@ -105,7 +112,8 @@ int Init(SDL_Surface *screen,struct Tangram *tangram) {
     return 0;
 }
 
-void Refresh(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus) {
+void Refresh(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus)
+{
     SDL_FillRect(screen, NULL, 0);
 
     filledPolygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, tangram->r, tangram->g, tangram->b, tangram->a);
@@ -124,7 +132,8 @@ void Refresh(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus) {
     polygonRGBA(screen, tangram->square.x, tangram->square.y, tangram->square.type, 0, 0, 0, 255);
     polygonRGBA(screen, tangram->trapeze.x, tangram->trapeze.y, tangram->trapeze.type, 0, 0, 0, 255);
 
-    if(focus != NULL) {
+    if(focus != NULL)
+    {
         filledPolygonRGBA(screen, focus->x, focus->y, focus->type, tangram->fr, tangram->fg, tangram->fb, tangram->fa);
         polygonRGBA(screen, focus->x, focus->y, focus->type, 0, 0, 0, 255);
     }
@@ -132,19 +141,24 @@ void Refresh(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus) {
     SDL_Flip(screen);
 }
 
-struct Form* Selection(struct Tangram *tangram, short x, short y) {
+struct Form* Selection(struct Tangram *tangram, short x, short y)
+{
     short vector1[2];
     short vector2[2];
     int i, j, tmp, res;
 
-    for (i=0;i<7;i++) {
+    for (i=0; i<7; i++)
+    {
         res = 0;
-        for (j=0;j<tangram->forms[i]->type;j++) {
-            if (j<(tangram->forms[i]->type)-1) {
+        for (j=0; j<tangram->forms[i]->type; j++)
+        {
+            if (j<(tangram->forms[i]->type)-1)
+            {
                 vector1[0] = tangram->forms[i]->x[j+1] - tangram->forms[i]->x[j];
                 vector1[1] = tangram->forms[i]->y[j+1] - tangram->forms[i]->y[j];
             }
-            else {
+            else
+            {
                 vector1[0] = tangram->forms[i]->x[0] - tangram->forms[i]->x[j];
                 vector1[1] = tangram->forms[i]->y[0] - tangram->forms[i]->y[j];
             }
@@ -164,20 +178,63 @@ struct Form* Selection(struct Tangram *tangram, short x, short y) {
     return NULL;
 }
 
-void DragDrop(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus, short x, short y) {
+void DragDrop(struct Form *focus, short x, short y)
+{
     int g[2]; //Point de gravité
     int v[2]; //Vecteur de translation
     int i;
-    if(focus->type == 3) {
+    if(focus->type == 3)
+    {
         g[0] = (focus->x[0]+focus->x[1]+focus->x[2])/3;
         g[1] = (focus->y[0]+focus->y[1]+focus->y[2])/3;
         v[0] = x - g[0];
         v[1] = y - g[1];
-        for(i=0;i<3;i++) {
+        for(i=0; i<3; i++)
+        {
             //printf("x = %d y = %d", focus->x[i], focus->y[i]);
             focus->x[i] = focus->x[i]+v[0];
             focus->y[i] = focus->y[i]+v[1];
             //printf("x' = %d y' = %d", focus->x[i], focus->y[i]);
+        }
+    }
+}
+
+void Rotation(struct Form *focus)
+{
+    int g[2]; //Point de gravité
+    int i;
+    float angle = 15; //Angle de Rotation
+    short xi;
+
+    printf("%f \n" , angle);
+    angle = ( M_PI * angle ) / 180;
+    printf("%f \n" , angle);
+
+    if(focus->type == 3)
+    {
+        g[0] = (focus->x[0]+focus->x[1]+focus->x[2])/3;
+        g[1] = (focus->y[0]+focus->y[1]+focus->y[2])/3;
+        for(i=0; i<3; i++)
+        {
+            xi = focus->x[i];
+            printf("x = %d y = %d \n", focus->x[i], focus->y[i]);
+            focus->x[i] = (cos(angle) * (xi - g[0])) - (sin(angle) *(focus->y[i]-g[1])) + g[0];
+            focus->y[i] = (sin(angle) * (xi - g[0])) + (cos(angle) *(focus->y[i]-g[1])) + g[1];
+            printf("x' = %d y' = %d \n", focus->x[i], focus->y[i]);
+        }
+    }
+    else
+    {
+            g[0] = ((focus->x[0]+focus->x[1])/2 + (focus->x[2]+focus->x[3])/2)/2;
+            g[1] = ((focus->y[0]+focus->y[1])/2 + (focus->y[2]+focus->y[3])/2)/2;
+
+        for(i=0; i<4; i++)
+        {
+            xi = focus->x[i];
+            printf("x = %d y = %d \n", focus->x[i], focus->y[i]);
+            focus->x[i] = (cos(angle) * (xi - g[0])) - (sin(angle) *(focus->y[i]-g[1])) + g[0];
+            focus->y[i] = (sin(angle) * (xi - g[0])) + (cos(angle) *(focus->y[i]-g[1])) + g[1];
+            printf("x' = %d y' = %d \n", focus->x[i], focus->y[i]);
         }
     }
 }

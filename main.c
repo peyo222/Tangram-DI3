@@ -40,7 +40,11 @@ int main ( int argc, char** argv ) {
                         break;
                 }
                 case SDL_MOUSEBUTTONDOWN: {
-                    if (event.button.button == SDL_BUTTON_RIGHT);
+                    if (event.button.button == SDL_BUTTON_RIGHT){
+                        focus = Selection(&tangram,event.button.x,event.button.y);
+                        Rotation(focus);
+                         Refresh(screen,&tangram,focus);
+                    };
                     if (event.button.button == SDL_BUTTON_MIDDLE);
                     if (event.button.button == SDL_BUTTON_LEFT) {
                         if (dragDrop == 0) {
@@ -55,7 +59,7 @@ int main ( int argc, char** argv ) {
                 }
                 case SDL_MOUSEMOTION: {
                     if (dragDrop == 1) {
-                        DragDrop(screen, &tangram, focus, event.motion.x, event.motion.y);
+                        DragDrop(focus, event.motion.x, event.motion.y);
                         Refresh(screen, &tangram, focus);
                     }
                 }
