@@ -2,8 +2,8 @@
 #define FORM_H_INCLUDED
 
 struct Form {
-    short x[4];
-    short y[4];
+    Sint16 x[4];
+    Sint16 y[4];
     int type;
 };
 

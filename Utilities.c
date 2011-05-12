@@ -1,7 +1,6 @@
 #include "Utilities.h"
 
-int Init(SDL_Surface *screen,struct Tangram *tangram)
-{
+int Init(SDL_Surface *screen,struct Tangram *tangram) {
     /* Initialisation du tangram */
     tangram->hTri1.type = 3;
     tangram->hTri2.type = 3;
@@ -10,13 +9,13 @@ int Init(SDL_Surface *screen,struct Tangram *tangram)
     tangram->sTri2.type = 3;
     tangram->square.type = 4;
     tangram->trapeze.type = 4;
-    tangram->forms[0] = &(tangram->hTri1);
-    tangram->forms[1] = &(tangram->hTri2);
+    tangram->forms[0] = &(tangram->sTri1);
+    tangram->forms[1] = &(tangram->sTri2);
     tangram->forms[2] = &(tangram->mTri);
-    tangram->forms[3] = &(tangram->sTri1);
-    tangram->forms[4] = &(tangram->sTri2);
-    tangram->forms[5] = &(tangram->square);
-    tangram->forms[6] = &(tangram->trapeze);
+    tangram->forms[3] = &(tangram->trapeze);
+    tangram->forms[4] = &(tangram->square);
+    tangram->forms[5] = &(tangram->hTri1);
+    tangram->forms[6] = &(tangram->hTri2);
     tangram->base = 300;
     tangram->r = 255;
     tangram->g = 255;
@@ -112,25 +111,22 @@ int Init(SDL_Surface *screen,struct Tangram *tangram)
     return 0;
 }
 
-void Refresh(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus)
-{
+void Refresh(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus) {
     SDL_FillRect(screen, NULL, 0);
-
-    filledPolygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, tangram->r, tangram->g, tangram->b, tangram->a);
     filledPolygonRGBA(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    aapolygonRGBA(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, 0, 0, 0, 255);
+    filledPolygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    aapolygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, 0, 0, 0, 255);
     filledPolygonRGBA(screen, tangram->mTri.x, tangram->mTri.y, tangram->mTri.type, tangram->r, tangram->g, tangram->b, tangram->a);
-    filledPolygonRGBA(screen, tangram->sTri1.x, tangram->sTri1.y, tangram->sTri1.type, tangram->r, tangram->g, tangram->b, tangram->a);
-    filledPolygonRGBA(screen, tangram->sTri2.x, tangram->sTri2.y, tangram->sTri2.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    aapolygonRGBA(screen, tangram->mTri.x, tangram->mTri.y, tangram->mTri.type, 0, 0, 0, 255);
     filledPolygonRGBA(screen, tangram->square.x, tangram->square.y, tangram->square.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    aapolygonRGBA(screen, tangram->square.x, tangram->square.y, tangram->square.type, 0, 0, 0, 255);
     filledPolygonRGBA(screen, tangram->trapeze.x, tangram->trapeze.y, tangram->trapeze.type, tangram->r, tangram->g, tangram->b, tangram->a);
-
-    polygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, 0, 0, 0, 255);
-    polygonRGBA(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, 0, 0, 0, 255);
-    polygonRGBA(screen, tangram->mTri.x, tangram->mTri.y, tangram->mTri.type, 0, 0, 0, 255);
-    polygonRGBA(screen, tangram->sTri1.x, tangram->sTri1.y, tangram->sTri1.type, 0, 0, 0, 255);
-    polygonRGBA(screen, tangram->sTri2.x, tangram->sTri2.y, tangram->sTri2.type, 0, 0, 0, 255);
-    polygonRGBA(screen, tangram->square.x, tangram->square.y, tangram->square.type, 0, 0, 0, 255);
-    polygonRGBA(screen, tangram->trapeze.x, tangram->trapeze.y, tangram->trapeze.type, 0, 0, 0, 255);
+    aapolygonRGBA(screen, tangram->trapeze.x, tangram->trapeze.y, tangram->trapeze.type, 0, 0, 0, 255);
+    filledPolygonRGBA(screen, tangram->sTri2.x, tangram->sTri2.y, tangram->sTri2.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    aapolygonRGBA(screen, tangram->sTri2.x, tangram->sTri2.y, tangram->sTri2.type, 0, 0, 0, 255);
+    filledPolygonRGBA(screen, tangram->sTri1.x, tangram->sTri1.y, tangram->sTri1.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    aapolygonRGBA(screen, tangram->sTri1.x, tangram->sTri1.y, tangram->sTri1.type, 0, 0, 0, 255);
 
     if(focus != NULL)
     {
@@ -216,7 +212,7 @@ void Invert(struct Form *focus) {
 void Rotation(struct Form *focus) {
     int g[2]; //Point de gravité
     int i;
-    float angle = 15; //Angle de Rotation
+    float angle = 45; //Angle de Rotation
     short xi;
 
     angle = ( M_PI * angle ) / 180;

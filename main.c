@@ -46,9 +46,11 @@ int main ( int argc, char** argv ) {
                 case SDL_MOUSEBUTTONDOWN: {
                     if (event.button.button == SDL_BUTTON_RIGHT) {
                         focus = Selection(&tangram,event.button.x,event.button.y);
-                        Rotation(focus);
-                        Refresh(screen,&tangram,focus);
-                    };
+                        if (focus != NULL) {
+                            Rotation(focus);
+                            Refresh(screen,&tangram,focus);
+                        }
+                    }
                     if (event.button.button == SDL_BUTTON_MIDDLE);
                     if (event.button.button == SDL_BUTTON_LEFT) {
                         if (!doubleClick) {
@@ -57,10 +59,10 @@ int main ( int argc, char** argv ) {
                                 Refresh(screen,&tangram,focus);
                                 if (focus != NULL)
                                     dragDrop = 1;
+                                    doubleClick = 1;
+                                    mouse[0] = event.motion.x;
+                                    mouse[1] = event.motion.y;
                             }
-                            doubleClick = 1;
-                            mouse[0] = event.motion.x;
-                            mouse[1] = event.motion.y;
                         }
                         else {
                             if (mouse[0] == event.motion.x && mouse[1] == event.motion.y) {
