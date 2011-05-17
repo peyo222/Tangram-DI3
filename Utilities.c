@@ -1,6 +1,6 @@
 #include "Utilities.h"
 
-int Init(SDL_Surface *screen,struct Tangram *tangram) {
+int Init(struct Tangram *tangram) {
     /* Initialisation du tangram */
     tangram->hTri1.type = 3;
     tangram->hTri2.type = 3;
@@ -87,52 +87,42 @@ int Init(SDL_Surface *screen,struct Tangram *tangram) {
     tangram->trapeze.y[2] = tangram->y + (tangram->base)/2;
     tangram->trapeze.x[3] = tangram->x + (tangram->base)*3/4;
     tangram->trapeze.y[3] = tangram->y + (tangram->base)*3/4;
-
-
-    /* Dessin du carré de base */
-    boxRGBA(screen, tangram->x, tangram->y, tangram->x + tangram->base, tangram->y + tangram->base, tangram->r, tangram->g, tangram->b, tangram->a);
-    /*filledPolygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, 3, tangram->r, tangram->g, tangram->b, tangram->a);
-    filledPolygonRGBA(screen, tangram->hTri2.x, tangram->hTri2.y, 3, tangram->r, tangram->g, tangram->b, tangram->a);
-    filledPolygonRGBA(screen, tangram->mTri.x, tangram->mTri.y, 3, tangram->r, tangram->g, tangram->b, tangram->a);
-    filledPolygonRGBA(screen, tangram->sTri1.x, tangram->sTri1.y, 3, tangram->r, tangram->g, tangram->b, tangram->a);
-    filledPolygonRGBA(screen, tangram->sTri2.x, tangram->sTri2.y, 3, tangram->r, tangram->g, tangram->b, tangram->a);
-    filledPolygonRGBA(screen, tangram->square.x, tangram->square.y, 4, tangram->r, tangram->g, tangram->b, tangram->a);
-    filledPolygonRGBA(screen, tangram->trapeze.x, tangram->trapeze.y, 4, tangram->r, tangram->g, tangram->b, tangram->a);*/
-
-    polygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, 0, 0, 0, 255);
-    polygonRGBA(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, 0, 0, 0, 255);
-    polygonRGBA(screen, tangram->mTri.x, tangram->mTri.y, tangram->mTri.type, 0, 0, 0, 255);
-    polygonRGBA(screen, tangram->sTri1.x, tangram->sTri1.y, tangram->sTri1.type, 0, 0, 0, 255);
-    polygonRGBA(screen, tangram->sTri2.x, tangram->sTri2.y, tangram->sTri2.type, 0, 0, 0, 255);
-    polygonRGBA(screen, tangram->square.x, tangram->square.y, tangram->square.type, 0, 0, 0, 255);
-    polygonRGBA(screen, tangram->trapeze.x, tangram->trapeze.y, tangram->trapeze.type, 0, 0, 0, 255);
-
-    SDL_Flip(screen);
     return 0;
 }
 
-void Refresh(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus) {
-    SDL_FillRect(screen, NULL, 0);
-    filledPolygonRGBA(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, tangram->r, tangram->g, tangram->b, tangram->a);
+void Refresh(SDL_Surface *screen, SDL_Surface *background, SDL_Surface *texture, struct Tangram *tangram, struct Form *focus) {
+    /*SDL_FillRect(screen, NULL, 0);*/
+    SDL_Rect bgPosition;
+    bgPosition.x = 0;bgPosition.y = 0;
+    SDL_BlitSurface(background, NULL, screen, &bgPosition);
+
+    //filledPolygonRGBA(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    texturedPolygon(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, texture, 10 ,10);
     aapolygonRGBA(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, 0, 0, 0, 255);
-    filledPolygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    //filledPolygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    texturedPolygon(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, texture, 0 ,0);
     aapolygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, 0, 0, 0, 255);
-    filledPolygonRGBA(screen, tangram->mTri.x, tangram->mTri.y, tangram->mTri.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    //filledPolygonRGBA(screen, tangram->mTri.x, tangram->mTri.y, tangram->mTri.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    texturedPolygon(screen, tangram->mTri.x, tangram->mTri.y, tangram->mTri.type, texture, 0 ,0);
     aapolygonRGBA(screen, tangram->mTri.x, tangram->mTri.y, tangram->mTri.type, 0, 0, 0, 255);
-    filledPolygonRGBA(screen, tangram->square.x, tangram->square.y, tangram->square.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    //filledPolygonRGBA(screen, tangram->square.x, tangram->square.y, tangram->square.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    texturedPolygon(screen, tangram->square.x, tangram->square.y, tangram->square.type, texture, 0 ,0);
     aapolygonRGBA(screen, tangram->square.x, tangram->square.y, tangram->square.type, 0, 0, 0, 255);
-    filledPolygonRGBA(screen, tangram->trapeze.x, tangram->trapeze.y, tangram->trapeze.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    //filledPolygonRGBA(screen, tangram->trapeze.x, tangram->trapeze.y, tangram->trapeze.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    texturedPolygon(screen, tangram->trapeze.x, tangram->trapeze.y, tangram->trapeze.type, texture, 0 ,0);
     aapolygonRGBA(screen, tangram->trapeze.x, tangram->trapeze.y, tangram->trapeze.type, 0, 0, 0, 255);
-    filledPolygonRGBA(screen, tangram->sTri2.x, tangram->sTri2.y, tangram->sTri2.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    //filledPolygonRGBA(screen, tangram->sTri2.x, tangram->sTri2.y, tangram->sTri2.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    texturedPolygon(screen, tangram->sTri2.x, tangram->sTri2.y, tangram->sTri2.type, texture, 0 ,0);
     aapolygonRGBA(screen, tangram->sTri2.x, tangram->sTri2.y, tangram->sTri2.type, 0, 0, 0, 255);
-    filledPolygonRGBA(screen, tangram->sTri1.x, tangram->sTri1.y, tangram->sTri1.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    //filledPolygonRGBA(screen, tangram->sTri1.x, tangram->sTri1.y, tangram->sTri1.type, tangram->r, tangram->g, tangram->b, tangram->a);
+    texturedPolygon(screen, tangram->sTri1.x, tangram->sTri1.y, tangram->sTri1.type, texture, 0 ,0);
     aapolygonRGBA(screen, tangram->sTri1.x, tangram->sTri1.y, tangram->sTri1.type, 0, 0, 0, 255);
 
-    if(focus != NULL)
+    /*if(focus != NULL)
     {
         filledPolygonRGBA(screen, focus->x, focus->y, focus->type, tangram->fr, tangram->fg, tangram->fb, tangram->fa);
         polygonRGBA(screen, focus->x, focus->y, focus->type, 0, 0, 0, 255);
-    }
+    }*/
 
     SDL_Flip(screen);
 }
@@ -229,8 +219,8 @@ void Rotation(struct Form *focus) {
         }
     }
     else {
-            g[0] = ((focus->x[0]+focus->x[1])/2 + (focus->x[2]+focus->x[3])/2)/2;
-            g[1] = ((focus->y[0]+focus->y[1])/2 + (focus->y[2]+focus->y[3])/2)/2;
+            g[0] = focus->x[0]+(focus->x[2]-focus->x[0])/2;
+            g[1] = focus->y[0]+(focus->y[2]-focus->y[0])/2;
         for(i=0; i<4; i++) {
             xi = focus->x[i];
             printf("x = %d y = %d \n", focus->x[i], focus->y[i]);

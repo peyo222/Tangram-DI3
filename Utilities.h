@@ -7,9 +7,9 @@
 #include "Form.h"
 #define UTILITIES_H_INCLUDED
 
-int Init(SDL_Surface *screen, struct Tangram *tangram);
+int Init(struct Tangram *tangram);
 struct Form* Selection(struct Tangram *tangram, short x, short y);
-void Refresh(SDL_Surface *screen, struct Tangram *tangram, struct Form *focus);
+void Refresh(SDL_Surface *screen, SDL_Surface *background, SDL_Surface *texture, struct Tangram *tangram, struct Form *focus);
 void DragDrop(struct Form *focus,  short x, short y);
 void Invert(struct Form *focus);
 void Rotation(struct Form *focus);

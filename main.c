@@ -6,6 +6,8 @@
 
 int main ( int argc, char** argv ) {
     SDL_Surface *screen = NULL;
+    SDL_Surface *background = NULL;
+    SDL_Surface *texture = NULL;
     SDL_Event event;
     int done = 0;       // Fin de la boucle principale
     int dragDrop = 0;   // Détection du drag&drop
@@ -23,14 +25,19 @@ int main ( int argc, char** argv ) {
         return -1;
     }
     screen = SDL_SetVideoMode(840, 480, 16, SDL_HWSURFACE|SDL_DOUBLEBUF); // Creation d'une nouvelle fenêtre
-    if ( !screen ) {
+    //Init du background
+    background = SDL_LoadBMP("japan2.bmp");
+    //Init de la texture
+    texture = SDL_LoadBMP("texture.bmp");
+
+    if (!screen) {
         printf("Impossible d'initialiser la fenêtre: %s\n", SDL_GetError());
         return -1;
     }
     SDL_WM_SetCaption("Tangram", NULL); // Nom de la fenêtre
-    if (Init(screen, &tangram) == -1) // Initialisation des formes et des dessins
+    if (Init(&tangram) == -1) // Initialisation des formes et des dessins
         return -1;
-
+    Refresh(screen, background, texture, &tangram, focus);
     /*Programme principal*/
     while (!done) { // Boucle principale
         while (SDL_WaitEvent(&event)) {
@@ -48,7 +55,7 @@ int main ( int argc, char** argv ) {
                         focus = Selection(&tangram,event.button.x,event.button.y);
                         if (focus != NULL) {
                             Rotation(focus);
-                            Refresh(screen,&tangram,focus);
+                            Refresh(screen,background, texture, &tangram,focus);
                         }
                     }
                     if (event.button.button == SDL_BUTTON_MIDDLE);
@@ -56,7 +63,7 @@ int main ( int argc, char** argv ) {
                         if (!doubleClick) {
                             if (!dragDrop) {
                                 focus = Selection(&tangram,event.button.x,event.button.y);
-                                Refresh(screen,&tangram,focus);
+                                Refresh(screen,background,texture,&tangram,focus);
                                 if (focus != NULL)
                                     dragDrop = 1;
                                     doubleClick = 1;
@@ -67,10 +74,10 @@ int main ( int argc, char** argv ) {
                         else {
                             if (mouse[0] == event.motion.x && mouse[1] == event.motion.y) {
                                 Invert(focus);
-                                Refresh(screen,&tangram,focus);
+                                Refresh(screen,background,texture,&tangram,focus);
                             }
                             focus = Selection(&tangram,event.button.x,event.button.y);
-                            Refresh(screen,&tangram,focus);
+                            Refresh(screen,background,texture,&tangram,focus);
                             if (focus != NULL)
                                 dragDrop = 1;
                             doubleClick = 0;
@@ -89,13 +96,13 @@ int main ( int argc, char** argv ) {
                     if (dragDrop == 1) {
                         if (!mouseMove) {
                             DragDrop(focus, event.motion.x, event.motion.y);
-                            Refresh(screen, &tangram, focus);
+                            Refresh(screen, background, texture, &tangram, focus);
                             mouseMove = 2;
                         }
                         else
                             mouseMove--;
                         DragDrop(focus, event.motion.x, event.motion.y);
-                        Refresh(screen, &tangram, focus);
+                        Refresh(screen, background, texture,&tangram, focus);
                     }
                 }
             }
