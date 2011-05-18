@@ -12,15 +12,17 @@ int main ( int argc, char** argv ) {
     int done = 0;       // Fin de la boucle principale
     int dragDrop = 0;   // Détection du drag&drop
     int buttonUp = 0;   // On prend un buttonUp sur deux
-    int mouseMove = 0;  // On prends en compte que un déplacement de pixel sur deux
     int doubleClick = 0;// Détection du double click
     int mouse[2];       // Sauvegarde des coordonnées de la souris
     struct Tangram tangram;
     struct Form * focus = NULL;
+    void* param[5];
+    SDL_TimerID timer;
+    Uint32 delay = (33/10)*10;
 
 
     /* Initialisation*/
-    if ( SDL_Init( SDL_INIT_VIDEO ) < 0 ) { // Initialisation du SDL_Video
+    if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0 ) { // Initialisation du SDL_Video
         printf( "Impossible d'initialiser SDL: %s\n", SDL_GetError() );
         return -1;
     }
@@ -37,7 +39,16 @@ int main ( int argc, char** argv ) {
     SDL_WM_SetCaption("Tangram", NULL); // Nom de la fenêtre
     if (Init(&tangram) == -1) // Initialisation des formes et des dessins
         return -1;
-    Refresh(screen, background, texture, &tangram, focus);
+    /*if (param = malloc(sizeof(void*)*5))
+        return -1;*/
+    param[0] = screen;
+    param[1] = background;
+    param[2] = texture;
+    param[3] = &tangram;
+    param[4] = focus;
+    //Refresh(30, param);
+    timer = SDL_AddTimer(delay, Refresh, param);
+    //Refresh(screen, background, texture, &tangram, focus);
     /*Programme principal*/
     while (!done) { // Boucle principale
         while (SDL_WaitEvent(&event)) {
@@ -55,7 +66,7 @@ int main ( int argc, char** argv ) {
                         focus = Selection(&tangram,event.button.x,event.button.y);
                         if (focus != NULL) {
                             Rotation(focus);
-                            Refresh(screen,background, texture, &tangram,focus);
+                            //Refresh(screen,background, texture, &tangram,focus);
                         }
                     }
                     if (event.button.button == SDL_BUTTON_MIDDLE);
@@ -63,7 +74,7 @@ int main ( int argc, char** argv ) {
                         if (!doubleClick) {
                             if (!dragDrop) {
                                 focus = Selection(&tangram,event.button.x,event.button.y);
-                                Refresh(screen,background,texture,&tangram,focus);
+                                //Refresh(screen,background,texture,&tangram,focus);
                                 if (focus != NULL)
                                     dragDrop = 1;
                                     doubleClick = 1;
@@ -74,10 +85,10 @@ int main ( int argc, char** argv ) {
                         else {
                             if (mouse[0] == event.motion.x && mouse[1] == event.motion.y) {
                                 Invert(focus);
-                                Refresh(screen,background,texture,&tangram,focus);
+                                //Refresh(screen,background,texture,&tangram,focus);
                             }
                             focus = Selection(&tangram,event.button.x,event.button.y);
-                            Refresh(screen,background,texture,&tangram,focus);
+                            //Refresh(screen,background,texture,&tangram,focus);
                             if (focus != NULL)
                                 dragDrop = 1;
                             doubleClick = 0;
@@ -94,19 +105,13 @@ int main ( int argc, char** argv ) {
                 }
                 case SDL_MOUSEMOTION: {
                     if (dragDrop == 1) {
-                        if (!mouseMove) {
-                            DragDrop(focus, event.motion.x, event.motion.y);
-                            Refresh(screen, background, texture, &tangram, focus);
-                            mouseMove = 2;
-                        }
-                        else
-                            mouseMove--;
                         DragDrop(focus, event.motion.x, event.motion.y);
-                        Refresh(screen, background, texture,&tangram, focus);
+                        //Refresh(screen, background, texture,&tangram, focus);
                     }
                 }
             }
         }
+        timer = SDL_AddTimer(delay, Refresh, param);
     }
     SDL_Quit(); // On ferme SDL
     return 0;

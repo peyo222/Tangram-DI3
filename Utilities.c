@@ -28,6 +28,7 @@ int Init(struct Tangram *tangram) {
     tangram->x = 50;
     tangram->y = 50;
 
+
     /* Initialisation du premier grand triangle */
     tangram->hTri1.x[0] = tangram->x;
     tangram->hTri1.y[0] = tangram->y;
@@ -90,14 +91,28 @@ int Init(struct Tangram *tangram) {
     return 0;
 }
 
-void Refresh(SDL_Surface *screen, SDL_Surface *background, SDL_Surface *texture, struct Tangram *tangram, struct Form *focus) {
+Uint32 Refresh(Uint32 interval, void *param) {
     /*SDL_FillRect(screen, NULL, 0);*/
+    SDL_Surface *screen;
+    SDL_Surface *background;
+    SDL_Surface *texture;
+    struct Tangram *tangram;
+    struct Form *focus;
+    void ** pparam = (void**)param;
+
+    screen = (SDL_Surface*)pparam[0];
+    background = (SDL_Surface*)pparam[1];
+    texture = (SDL_Surface*)pparam[2];
+    tangram = (struct Tangram*)pparam[3];
+    focus = (struct Form*)pparam[4];;
+
     SDL_Rect bgPosition;
     bgPosition.x = 0;bgPosition.y = 0;
     SDL_BlitSurface(background, NULL, screen, &bgPosition);
 
     //filledPolygonRGBA(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, tangram->r, tangram->g, tangram->b, tangram->a);
-    texturedPolygon(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, texture, 10 ,10);
+    if (texturedPolygon(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, texture, 10 ,10) == -1)
+        puts("OMG");
     aapolygonRGBA(screen, tangram->hTri2.x, tangram->hTri2.y, tangram->hTri2.type, 0, 0, 0, 255);
     //filledPolygonRGBA(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, tangram->r, tangram->g, tangram->b, tangram->a);
     texturedPolygon(screen, tangram->hTri1.x, tangram->hTri1.y, tangram->hTri1.type, texture, 0 ,0);
@@ -125,6 +140,7 @@ void Refresh(SDL_Surface *screen, SDL_Surface *background, SDL_Surface *texture,
     }*/
 
     SDL_Flip(screen);
+    return(interval);
 }
 
 struct Form* Selection(struct Tangram *tangram, short x, short y)
