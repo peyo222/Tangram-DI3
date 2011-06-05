@@ -6,6 +6,8 @@
 #include <SDL_gfxPrimitives.h>
 #include "Form.h"
 #define UTILITIES_H_INCLUDED
+#define WIN_SIZE_X 840
+#define WIN_SIZE_Y 480
 
 int Init(struct Tangram *tangram);
 struct Form* Selection(struct Tangram *tangram, short x, short y);

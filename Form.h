@@ -9,6 +9,10 @@ struct Form {
 
 struct Tangram {
     struct Form hTri1, hTri2, mTri, sTri1, sTri2, square, trapeze;
+    struct Tangram *puzzle1;
+    struct Tangram *puzzle2;
+    struct Tangram *puzzle3;
+    int puzzle;
     struct Form* forms[7]; //tableau de parcours des formes
     short base;
     short x; // coordonnées du point supérieur gauche
