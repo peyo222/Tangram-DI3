@@ -29,6 +29,7 @@ int main ( int argc, char** argv ) {
     tangram.puzzle1 = &puzzle1;
     tangram.puzzle2 = &puzzle2;
     tangram.puzzle3 = &puzzle3;
+    tangram.puzzle = 1;
 
 
     /* Initialisation*/
@@ -42,10 +43,10 @@ int main ( int argc, char** argv ) {
     //Init de la texture
     texture = SDL_LoadBMP("texture.bmp");
     //Init du boutton
-    buttonTmp = SDL_LoadBMP("button.bmp");
+    buttonTmp = SDL_LoadBMP("button2.bmp");
     button = SDL_DisplayFormat(buttonTmp);
     SDL_FreeSurface(buttonTmp);
-    colorkey = SDL_MapRGB(button->format, 0, 0, 0);
+    colorkey = SDL_MapRGB(button->format, 124, 50, 124);
     SDL_SetColorKey(button, SDL_RLEACCEL | SDL_SRCCOLORKEY, colorkey );
 
     if (!screen) {
@@ -102,6 +103,7 @@ int main ( int argc, char** argv ) {
                                         tangram.puzzle++;
                                     else
                                         tangram.puzzle = 1;
+                                    Init(&tangram);
                                 }
                             }
                         }

@@ -28,7 +28,6 @@ int Init(struct Tangram *tangram) {
     tangram->fa = 255;
     tangram->x = 50;
     tangram->y = 50;
-    tangram->puzzle = 1;
 
     /* Initialisation du premier grand triangle */
     tangram->hTri1.x[0] = tangram->x;
